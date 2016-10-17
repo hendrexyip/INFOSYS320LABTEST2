@@ -6,22 +6,25 @@ public class Sketch : MonoBehaviour {
 	public Material material1;  
 	public Material material2; 
 	public Material material3; 
-
+	public string jsonResponse;
+	public GameObject cube; 
 	//Variables for dataset
-	private string readingID;
-	private string location;
-	private string safetyCategory;
-	private string safetyMeasure;
-	private string whenReadingRecorded;
+	private string TreeID;
+	private string Location;
+	private string EcologicalValue;
+	private string HistoricalSignificance;
+	private string WhenReadingRecorded;
 	private float x;
 	private float y;
 	private float z;
 
-	public string _WebsiteURL = "http://kwon709.azurewebsites.net/tables/WaterPollutionReading?zumo-api-version=2.0.0";
+	// Add and change variables
 
+	public string _WebsiteURL = "http://hyip413.azurewebsites.net/tables/TreeSurvey?zumo-api-version=2.0.0";
+	//change the name of the table
 	void Start () {
 
-		string jsonResponse = Request.GET(_WebsiteURL);
+		jsonResponse = Request.GET(_WebsiteURL);
 
 		//Just in case something went wrong with the request we check the reponse and exit if there is no response.
 
@@ -29,49 +32,73 @@ public class Sketch : MonoBehaviour {
 		{
 			return;
 		}
-
+		//changing all the pollution reading
 		//We can now deserialize into an array of objects - in this case the class we created. The deserializer is smart enough to instantiate all the classes and populate the variables based on column name.
 		// convert the table into an array (this is shown in deserialise) 
-		WaterPollutionReading[] waterpollutionreadings = JsonReader.Deserialize<WaterPollutionReading[]>(jsonResponse);
-
-
-		foreach (WaterPollutionReading waterpollutionreading in waterpollutionreadings)
+		TreeSurvey[] treesurveys = JsonReader.Deserialize<TreeSurvey[]>(jsonResponse);
+		//****************CHANGE*************************                      **CHANGE**
+		//Change all the pollution reading
+		foreach (TreeSurvey treesurvey in treesurveys)
 		{
-
-			Debug.Log("X is " + waterpollutionreading.X + ", Y is " + waterpollutionreading.Y + ", Z is " + waterpollutionreading.Z + "" ) ;
-			readingID = waterpollutionreading.ReadingID;
-			location = waterpollutionreading.Location;
-			safetyCategory = waterpollutionreading.SafetyCategory;
-			safetyMeasure = waterpollutionreading.SafetyMeasure;
-			whenReadingRecorded = waterpollutionreading.WhenReadingRecorded;
-			x = float.Parse(waterpollutionreading.X);
-			y = float.Parse(waterpollutionreading.Y);
-			z = float.Parse(waterpollutionreading.Z);
-
+			//THE S ^^
+			Debug.Log("X is " + treesurvey.X + ", Y is " + treesurvey.Y + ", Z is " + treesurvey.Z + "" ) ;
+			TreeID = treesurvey.TreeID;
+			Location = treesurvey.Location;
+			EcologicalValue = treesurvey.EcologicalValue;
+			HistoricalSignificance = treesurvey.HistoricalSignificance;
+			WhenReadingRecorded = treesurvey.WhenReadingRecorded;
+			x = float.Parse(treesurvey.X);
+			y = float.Parse(treesurvey.Y);
+			z = float.Parse(treesurvey.Z);
+			//chnage to the table names
 			GameObject newCube = (GameObject)Instantiate(myPrefab, new Vector3(x, y, z), Quaternion.identity);
-			newCube.name = waterpollutionreading.ReadingID;			
+			newCube.name = treesurvey.TreeID;			
 			//adds label
-			newCube.GetComponentInChildren<TextMesh> ().text= "(" + waterpollutionreading.X + ", " + waterpollutionreading.Y + ", " + waterpollutionreading.Z + ")";
+			newCube.GetComponentInChildren<TextMesh> ().text= "(" + treesurvey.X + ", " + treesurvey.Y + ", " + treesurvey.Z + ")";
+			//RIGHT CLICK SPHERE > 3D TEXT
 
+			if (treesurvey.EcologicalValue == "High") {
+				newCube.GetComponent<Renderer> ().material = material1;
+
+			} else if (treesurvey.EcologicalValue == "Medium") {
+				newCube.GetComponent<Renderer> ().material = material2;
+
+			} else {
+
+				newCube.GetComponent<Renderer> ().material = material3;
+
+			}
 		}
 
 
 	}
 
-	void Update () {} 
+	void Update () {
+
+		if (Input.GetMouseButtonDown (0)) {
+			RaycastHit hitdetail= new RaycastHit();
+			//whereever your mouse is you get that position
+			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
+
+			//if you hit the project, the action will then
+			if (Physics.Raycast (ray, out hitdetail, 100)) {
+
+
+				hitdetail.collider.gameObject.GetComponent<Renderer> ().material = material2;
+				Debug.Log (hitdetail.collider.name);
+				//going back to what happen 
+				int index = int.Parse(hitdetail.collider.gameObject.name);
+				//row 2 index 1 
+				TreeSurvey[] treesurveys = JsonReader.Deserialize<TreeSurvey[]>(jsonResponse);
+
+				//creating a cube where you hit the raycast
+				//ReadingID is 1- so you add -1 otherwise you will get index out of bound
+				GameObject newCube = (GameObject)Instantiate(cube, new Vector3(hitdetail.point.x, hitdetail.point.y, hitdetail.point.z), Quaternion.identity);
+				newCube.GetComponentInChildren<TextMesh> ().text= "(" + treesurveys[index-1].Location + ", " + treesurveys[index-1].Y + ", " + treesurveys[index-1].Z + ")";
+			}                                                                                           // Location is attribute
+
+		}
+	}
 }
 
-//Update is called once per frame    
 
-
-//if (waterpollutionreading.X) {
-// float y = where it is on the y axis- where is it rotating on the y axis- You have three different levels and this is changed by float y
-//float y = 0.55f;
-//float z = 16.0f;
-// Create a new cube for every object in that table
-//GameObject newCube = (GameObject)Instantiate(myPrefab, new Vector3(x, y, z), Quaternion.identity);
-// <shows what you can put in- refer to unity>().field it is
-// changes cube size based on script in mycubescript- you can change this value directly
-//setsize(method) vs setsize = field
-//newCube.GetComponent<mySphereScript>().setSize(0.3f);
-//newCube.GetComponent<mySphereScript>().rotateSpeed = perc;

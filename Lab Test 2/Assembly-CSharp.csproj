@@ -50,7 +50,7 @@
      <Compile Include="Assets\SampleScenes\Menu\Scripts\ReturnToMainMenu.cs" />
      <Compile Include="Assets\SampleScenes\Menu\Scripts\SceneAndURLLoader.cs" />
      <Compile Include="Assets\SampleScenes\Scenes\Sketch.cs" />
-     <Compile Include="Assets\SampleScenes\Scenes\WaterPollutionReading.cs" />
+     <Compile Include="Assets\SampleScenes\Scenes\TreeSurvey.cs" />
      <Compile Include="Assets\SampleScenes\Scenes\WebRequest.cs" />
      <Compile Include="Assets\SampleScenes\Scenes\mySphereScript.cs" />
      <Compile Include="Assets\SampleScenes\Scripts\CameraSwitch.cs" />
