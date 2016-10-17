@@ -8,3 +8,4 @@ The scripts used for the lab test are located on Assets > SampleScences > Scence
 - MySpheres.cs
 - WebRequest.cs
 
+Git hub URL is https://github.com/hendrexyip/INFOSYS320LABTEST2.git 
